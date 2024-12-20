@@ -12,8 +12,8 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-400 to-blue-600 p-8">
         <div className="max-w-2xl mx-auto text-center text-white">
-          <h1 className="text-5xl font-bold mb-6">Prompt Master</h1>
-          <p className="text-xl mb-8">Learn the art of prompt engineering!</p>
+          <h1 className="text-5xl font-bold mb-6">De Prompt - Fun meets AI</h1>
+          <p className="text-xl mb-8">Guess, test, and level up your AI skills - one prompt at a time!</p>
           <button
             onClick={() => setGameStarted(true)}
             className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg text-xl"

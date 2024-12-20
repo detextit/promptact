@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Prompt Master',
-  description: 'Learn the art of prompt engineering',
+  title: 'Deprompt',
+  description: 'Prompt smarter, play harder!',
 }
 
 export default function RootLayout({

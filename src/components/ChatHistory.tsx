@@ -12,16 +12,16 @@ export default function ChatHistory({ conversation }: ChatHistoryProps) {
           key={index}
           className={`p-4 rounded-lg ${
             message.role === 'assistant'
-              ? 'bg-blue-100 ml-4'
+              ? 'bg-white ml-4'
               : message.role === 'user'
-              ? 'bg-green-100'
-              : 'bg-gray-100'
+              ? 'bg-green-50'
+              : 'bg-gray-50'
           }`}
         >
-          <div className="font-semibold text-sm text-gray-600">
-            {message.role.charAt(0).toUpperCase() + message.role.slice(1)}
+          <div className="font-semibold text-sm text-gray-600 mb-1">
+            {message.role === 'assistant' ? 'AI' : 'User'}
           </div>
-          <div className="mt-1">{message.content}</div>
+          <div className="text-gray-800">{message.content}</div>
         </div>
       ))}
     </div>
