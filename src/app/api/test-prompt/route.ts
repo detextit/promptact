@@ -24,7 +24,10 @@ function calculateSimilarity(str1: string, str2: string): number {
 export async function POST(request: Request) {
   try {
     const { userPrompt, targetConversation } = await request.json()
-    
+    const systemMessage = targetConversation.find(
+        (msg: Message) => msg.role === 'system'
+      )
+
     const userMessage = targetConversation.find(
       (msg: Message) => msg.role === 'user'
     )
@@ -41,24 +44,18 @@ export async function POST(request: Request) {
       ]
     })
 
-    const assistantMessage = targetConversation.find(
-      (msg: Message) => msg.role === 'assistant'
-    )
-
-    if (!completion.choices[0].message.content || !assistantMessage?.content) {
+    if (!completion.choices[0].message.content) {
       throw new Error('Invalid response')
     }
 
-    const similarityScore = calculateSimilarity(
-      completion.choices[0].message.content,
-      assistantMessage.content
-    )
+    const similarityScore = calculateSimilarity(systemMessage.content, userPrompt)
 
     return NextResponse.json({
       score: similarityScore,
       response: completion.choices[0].message.content
     })
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       { error: 'Error processing prompt' },
       { status: 500 }

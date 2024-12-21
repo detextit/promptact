@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Level } from '@/types';
 import ReactMarkdown from 'react-markdown';
 
@@ -15,6 +15,12 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
     passed?: boolean;
   }>(null);
   const [showHint, setShowHint] = useState(false);
+
+  useEffect(() => {
+    setUserPrompt('');
+    setResult(null);
+    setShowHint(false);
+  }, [level.number]);
 
   const handleSubmit = async () => {
     const response = await fetch('/api/test-prompt', {
