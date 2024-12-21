@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# De Prompt - AI Prompt Engineering Game
+
+De Prompt is an interactive game designed to help users learn and master the art of prompt engineering. Players are challenged to reverse-engineer system prompts by observing AI conversations and crafting their own prompts to match the target behavior.
+
+## Features
+
+- 🎮 Interactive learning experience
+- 🎯 Multiple levels with increasing complexity
+- 💡 Helpful hints and feedback
+- 📊 Real-time similarity scoring
+- 🔄 Instant AI response testing
+- 🎉 Progress tracking and completion rewards
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- OpenAI API key
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/deprompt.git
+cd deprompt
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create a `.env.local` file in the root directory and add your OpenAI API key:
+
+```env
+OPENAI_API_KEY=your_api_key_here
+```
+
+4. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to start playing!
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How to Play
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Each level presents you with a target conversation between a user and an AI
+2. Your goal is to figure out the system prompt that generated the AI's response
+3. Write your system prompt and test it
+4. Get a similarity score of 50% or higher to reveal the target prompt
+5. Progress through levels to master different prompt engineering techniques
 
-## Learn More
+## Technology Stack
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- OpenAI GPT-4
+- React Markdown
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+deprompt/
+├── src/
+│ ├── app/ # Next.js app router
+│ ├── components/ # React components
+│ ├── data/ # Game levels and prompts
+│ └── types/ # TypeScript definitions
+├── public/ # Static assets
+└── scripts/ # Level generation scripts
+```
 
-## Deploy on Vercel
+## Acknowledgments
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Google Arts & Culture for UI/UX inspiration
