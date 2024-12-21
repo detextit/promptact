@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Level } from '@/types';
+import ReactMarkdown from 'react-markdown';
 
 interface GameLevelProps {
   level: Level;
@@ -32,7 +33,9 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
   const ChatMessage = ({ role, content }: { role: string; content: string }) => (
     <div className={`rounded-lg p-4 ${role === 'AI' ? 'bg-white' : 'bg-green-50'}`}>
       <div className="text-gray-600 text-sm font-medium mb-1">{role}</div>
-      <div className="text-gray-800">{content}</div>
+      <div className="text-gray-800 prose prose-sm max-h-[30vh] overflow-y-auto">
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </div>
     </div>
   );
 
@@ -40,27 +43,33 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
     <div className="min-h-screen grid grid-cols-2">
       {/* Target Side */}
       <div className="bg-amber-400 p-8 relative">
-        <div className="absolute top-8 right-4">
+        <div className="absolute top-6 right-8">
           <button
             onClick={() => setShowHint(!showHint)}
-            className="text-blue-600 hover:text-blue-800 flex items-center gap-2"
+            className="text-blue-600 hover:text-blue-800 flex items-center gap-2 text-sm"
           >
-            <span className="text-xl">💡</span>
+            <span>💡</span>
             Show Hint
           </button>
         </div>
 
-        <div className="bg-black text-white py-2 px-4 rounded-lg inline-block mb-8">
-          <h2 className="text-xl font-bold">Target Conversation</h2>
+        <div className="mb-12">
+          <div className="bg-black text-white py-1.5 px-4 rounded-full inline-block">
+            <h2 className="text-base font-medium">Target Conversation</h2>
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="bg-cream-50 rounded-lg p-4">
-            <div className="text-gray-700 font-medium mb-2">System Prompt:</div>
-            <div className="text-gray-600 min-h-[60px] flex items-center">
-              {result?.score && result.score >= 0.5 
-                ? level.targetConversation[0].content 
-                : '🔒 Get 50% similarity score to reveal the system prompt'}
+        <div className="max-w-2xl space-y-6">
+          <div>
+            <div className="text-gray-700 text-sm mb-1">System Prompt:</div>
+            <div className="bg-cream-50/80 rounded-lg p-4">
+              <div className="text-gray-600 prose prose-sm">
+                {result?.score && result.score >= 0.5 ? (
+                  <ReactMarkdown>{level.targetConversation[0].content}</ReactMarkdown>
+                ) : (
+                  '🔒 Get 50% similarity score to reveal the system prompt'
+                )}
+              </div>
             </div>
           </div>
 
@@ -76,9 +85,10 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
           </div>
 
           {showHint && (
-            <div className="bg-white/90 rounded-lg p-4 mt-8">
-              <div className="font-medium mb-1">Hint:</div>
-              <div className="text-gray-700">{level.hint}</div>
+            <div className="bg-white/90 rounded-lg p-4">
+              <div className="text-gray-700 prose prose-sm">
+                <ReactMarkdown>{level.hint}</ReactMarkdown>
+              </div>
             </div>
           )}
         </div>
@@ -86,32 +96,38 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
 
       {/* User Side */}
       <div className="bg-blue-400 p-8">
-        <div className="bg-black text-white py-2 px-4 rounded-lg inline-block mb-8">
-          <h2 className="text-xl font-bold">
-            {result 
-              ? `${(result.score * 100).toFixed(1)}% match!`
-              : 'Your Attempt'
-            }
-          </h2>
+        <div className="mb-12">
+          <div className="bg-black text-white py-1.5 px-4 rounded-full inline-block">
+            <h2 className="text-base font-medium">
+              {result 
+                ? `${(result.score * 100).toFixed(1)}% match!`
+                : 'Your Attempt'
+              }
+            </h2>
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg p-4">
-            <div className="text-gray-700 font-medium mb-2">Your System Prompt:</div>
-            <textarea
-              value={userPrompt}
-              onChange={(e) => setUserPrompt(e.target.value)}
-              placeholder="Write your system prompt here..."
-              className="w-full h-[60px] text-gray-800 resize-none focus:outline-none"
-            />
+        <div className="max-w-2xl space-y-6">
+          <div>
+            <div className="text-gray-700 text-sm mb-1">Your System Prompt:</div>
+            <div className="bg-white rounded-lg p-4">
+              <textarea
+                value={userPrompt}
+                onChange={(e) => setUserPrompt(e.target.value)}
+                placeholder="Write your system prompt here..."
+                className="w-full h-24 text-gray-800 resize-none focus:outline-none"
+              />
+            </div>
           </div>
 
-          <button
-            onClick={handleSubmit}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
-          >
-            Test Prompt
-          </button>
+          <div>
+            <button
+              onClick={handleSubmit}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm"
+            >
+              Test Prompt
+            </button>
+          </div>
 
           {result && (
             <div className="space-y-4">
@@ -140,7 +156,7 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
               {result.passed && (
                 <button
                   onClick={onComplete}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg mt-4"
+                  className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg text-sm mt-8"
                 >
                   Next Level →
                 </button>
