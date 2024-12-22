@@ -24,8 +24,8 @@ const levels: Level[] = sortedPrompts.map((prompt, index) => ({
     { role: 'user' as const, content: prompt.user },
     { role: 'assistant' as const, content: prompt.assistant }
   ] as Message[],
-  hint: prompt.hint,
-  minimumScore: 0.7 + (parseInt(prompt.difficulty) * 0.1)
+  hint: JSON.parse(prompt.hints),
+  minimumScore: 1.1 - (parseInt(prompt.difficulty) * 0.1)
 }));
 
 // Write the generated levels to a JSON file

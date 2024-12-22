@@ -15,6 +15,7 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
     passed?: boolean;
   }>(null);
   const [showHint, setShowHint] = useState(false);
+  const [currentHintIndex, setCurrentHintIndex] = useState(0);
 
   useEffect(() => {
     setUserPrompt('');
@@ -32,7 +33,7 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
     });
     
     const data = await response.json();
-    const passed = data.score >= 0.5;
+    const passed = data.score >= level.minimumScore;
     setResult({ ...data, passed });
   };
 
@@ -93,7 +94,28 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
           {showHint && (
             <div className="bg-white/90 rounded-lg p-4">
               <div className="text-gray-700 prose prose-sm">
-                <ReactMarkdown>{level.hint}</ReactMarkdown>
+                <ReactMarkdown>{level.hint[currentHintIndex]}</ReactMarkdown>
+                {level.hint.length > 1 && (
+                  <div className="mt-4 flex justify-between items-center">
+                    <button
+                      onClick={() => setCurrentHintIndex(i => Math.max(0, i - 1))}
+                      disabled={currentHintIndex === 0}
+                      className="text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                    >
+                      ← Previous hint
+                    </button>
+                    <span className="text-sm text-gray-500">
+                      {currentHintIndex + 1} / {level.hint.length}
+                    </span>
+                    <button
+                      onClick={() => setCurrentHintIndex(i => Math.min(level.hint.length - 1, i + 1))}
+                      disabled={currentHintIndex === level.hint.length - 1}
+                      className="text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                    >
+                      Next hint →
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}

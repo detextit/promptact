@@ -6,6 +6,6 @@ export interface Message {
 export interface Level {
   number: number;
   targetConversation: Message[];
-  hint: string;
+  hint: string[];
   minimumScore: number;
 } 

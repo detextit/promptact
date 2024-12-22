@@ -1,11 +1,9 @@
 import { Level, Message } from '../src/types';
 
 export interface CSVPrompt {
-  category: string;
-  name: string;
   prompt: string;
   difficulty: string;
-  hint: string;
+  hints: string;
   user: string;
   assistant: string;
 }
