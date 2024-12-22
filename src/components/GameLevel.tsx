@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Level } from '@/types';
 import ReactMarkdown from 'react-markdown';
+import { Righteous } from 'next/font/google';
+const righteous = Righteous({ weight: '400', subsets: ['latin'] });
 
 interface GameLevelProps {
   level: Level;
@@ -38,13 +40,20 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
   };
 
   const ChatMessage = ({ role, content }: { role: string; content: string }) => (
-    <div className={`rounded-lg p-4 ${role === 'AI' ? 'bg-white' : 'bg-green-50'}`}>
-      <div className="text-gray-600 text-sm font-medium mb-1">{role}</div>
+    <div className={`rounded-lg p-4 ${role === 'AI' ? 'bg-white/90' : 'bg-green-50'} shadow-lg`}>
+      <div className={`${righteous.className} text-blue-800 text-sm font-medium mb-1`}>{role}</div>
       <div className="text-gray-800 prose prose-sm max-h-[30vh] overflow-y-auto">
         <ReactMarkdown>{content}</ReactMarkdown>
       </div>
     </div>
   );
+
+  const toggleHint = () => {
+    if (showHint) {
+      setCurrentHintIndex(0);
+    }
+    setShowHint(!showHint);
+  };
 
   return (
     <div className="min-h-screen grid grid-cols-2">
@@ -52,29 +61,34 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
       <div className="bg-amber-400 p-8 relative">
         <div className="absolute top-6 right-8">
           <button
-            onClick={() => setShowHint(!showHint)}
-            className="text-blue-600 hover:text-blue-800 flex items-center gap-2 text-sm"
+            onClick={toggleHint}
+            className={`${righteous.className} text-amber-900 hover:text-amber-700 flex items-center gap-2 text-sm bg-amber-100/50 px-4 py-2 rounded-full transition-all hover:bg-amber-100`}
           >
             <span>💡</span>
-            Show Hint
+            {showHint ? "CLOSE INTEL" : "REQUEST INTEL"}
           </button>
         </div>
 
-        <div className="mb-12">
-          <div className="bg-black text-white py-1.5 px-4 rounded-full inline-block">
-            <h2 className="text-base font-medium">Target Conversation</h2>
-          </div>
+        <div className="mb-12 text-center">
+          <h2 className="text-2xl font-bold text-amber-900 inline-flex items-center gap-2">
+            <span>🎯</span>
+            Target Conversation
+          </h2>
         </div>
 
         <div className="max-w-2xl space-y-6">
           <div>
-            <div className="text-gray-700 text-sm mb-1">System Prompt:</div>
-            <div className="bg-cream-50/80 rounded-lg p-4">
+            <div className="text-amber-900 text-sm font-bold mb-1 uppercase tracking-wide">
+              AI INSTRUCTIONS:
+            </div>
+            <div className="bg-cream-50/80 rounded-lg p-4 shadow-lg">
               <div className="text-gray-600 prose prose-sm">
-                {result?.score && result.score >= 0.5 ? (
+                {result?.score && result.score >= level.minimumScore ? (
                   <ReactMarkdown>{level.targetConversation[0].content}</ReactMarkdown>
                 ) : (
-                  '🔒 Get 50% similarity score to reveal the system prompt'
+                  <div className={`${righteous.className} text-amber-800 text-center py-2`}>
+                    🔒 ACHIEVE {(level.minimumScore * 100).toFixed(0)}% MATCH TO DECRYPT SYSTEM PROMPT 🔒
+                  </div>
                 )}
               </div>
             </div>
@@ -124,25 +138,31 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
 
       {/* User Side */}
       <div className="bg-blue-400 p-8">
-        <div className="mb-12">
-          <div className="bg-black text-white py-1.5 px-4 rounded-full inline-block">
-            <h2 className="text-base font-medium">
-              {result 
-                ? `${(result.score * 100).toFixed(1)}% match!`
-                : 'Your Attempt'
-              }
-            </h2>
-          </div>
+        <div className="mb-12 text-center">
+          <h2 className="text-2xl font-bold text-blue-900 inline-flex items-center gap-2">
+            {result 
+              ? <>
+                  <span>📊</span>
+                  Score: {(result.score * 100).toFixed(1)}% / Required: {(level.minimumScore * 100).toFixed(1)}%
+                </>
+              : <>
+                  <span>🎮</span>
+                  Guess the Prompt!
+                </>
+            }
+          </h2>
         </div>
 
         <div className="max-w-2xl space-y-6">
           <div>
-            <div className="text-gray-700 text-sm mb-1">Your System Prompt:</div>
-            <div className="bg-white rounded-lg p-4">
+            <div className={`${righteous.className} text-blue-900 text-sm font-bold mb-1 uppercase tracking-wide`}>
+              YOUR INPUT:
+            </div>
+            <div className="bg-white rounded-lg p-4 shadow-lg">
               <textarea
                 value={userPrompt}
                 onChange={(e) => setUserPrompt(e.target.value)}
-                placeholder="Write your system prompt here..."
+                placeholder="Enter your system prompt..."
                 className="w-full h-24 text-gray-800 resize-none focus:outline-none"
               />
             </div>
@@ -151,21 +171,27 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
           <div>
             <button
               onClick={handleSubmit}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm"
+              className={`${righteous.className} bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-base shadow-lg transition-all hover:scale-105`}
             >
-              Test Prompt
+            DEPLOY 🚀
             </button>
           </div>
 
           {result && (
             <div className="space-y-4">
-              {result.score < 0.5 && (
+              {result.score < level.minimumScore && (
                 <div className="bg-white/90 rounded-lg p-4">
                   <div className="text-sm">
-                    💡 {result.score < 0.3 
-                      ? "Focus on the role and style"
-                      : "Consider the response structure"
+                    💡 {result.score < level.minimumScore * 0.6 
+                      ? "SIGNAL DETECTED: Adjust tactical approach for better target match"
+                      : "NEAR MATCH: Fine-tune parameters for mission success"
                     }
+                  </div>
+                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                      style={{ width: `${(result.score / level.minimumScore) * 100}%` }}
+                    />
                   </div>
                 </div>
               )}
@@ -184,9 +210,10 @@ export default function GameLevel({ level, onComplete }: GameLevelProps) {
               {result.passed && (
                 <button
                   onClick={onComplete}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg text-sm mt-8"
+                  className={`${righteous.className} w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg text-base mt-8 shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2`}
                 >
-                  Next Level →
+                  <span>🌟</span>
+                  MISSION COMPLETE! PROCEED TO NEXT OBJECTIVE →
                 </button>
               )}
             </div>
