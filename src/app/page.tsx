@@ -56,7 +56,7 @@ export default function Home() {
         <div className="max-w-2xl w-full text-center space-y-8">
           <div className={righteous.className}>
             <h1 className="text-5xl font-bold text-amber-400 mb-4 tracking-wider">
-              PROMPT OPS
+              PROMPTACT
             </h1>
             <p className="text-blue-400 text-xl mb-8">
               TACTICAL PROMPT ENGINEERING SIMULATOR
@@ -67,7 +67,7 @@ export default function Home() {
             <p className="text-gray-300 mb-6">
               Your mission: Reverse engineer AI system prompts through tactical observation and analysis.
             </p>
-            
+
             <div className="grid grid-cols-3 gap-4 mb-8">
               <div className="bg-gray-800 rounded-lg p-4">
                 <div className="text-amber-400 text-2xl mb-2">🎯</div>
@@ -89,7 +89,7 @@ export default function Home() {
               </div>
             </div>
 
-            <button 
+            <button
               onClick={() => setGameStarted(true)}
               className={`${righteous.className} inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-gray-900 px-8 py-3 rounded-lg text-lg font-bold shadow-lg transition-all hover:scale-105`}
             >
