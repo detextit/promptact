@@ -1,6 +1,6 @@
-# De Prompt - AI Prompt Engineering Game
+# Prompt Ops - AI Prompt Engineering Game
 
-De Prompt is an interactive game designed to help users learn and master the art of prompt engineering. Players are challenged to reverse-engineer system prompts by observing AI conversations and crafting their own prompts to match the target behavior.
+Prompt Ops is an interactive game designed to help users learn and master the art of prompt engineering. Players are challenged to reverse-engineer system prompts by observing AI conversations and crafting their own prompts to match the target behavior.
 
 ## Features
 
