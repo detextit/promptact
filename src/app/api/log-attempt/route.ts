@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   try {
     const data: AttemptLog = await request.json();
     
-    console.log('PROMPT_ATTEMPT:', JSON.stringify({
+    console.log('ATTEMPT:', JSON.stringify({
       ...data,
     }));
 
