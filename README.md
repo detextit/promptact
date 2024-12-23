@@ -9,7 +9,6 @@ Promptact is an interactive game designed to help users learn and master the art
 - 💡 Helpful hints and feedback
 - 📊 Real-time similarity scoring
 - 🔄 Instant AI response testing
-- 🎉 Progress tracking and completion rewards
 
 ## Getting Started
 
