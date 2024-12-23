@@ -46,6 +46,18 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
       const passed = data.score >= level.minimumScore;
       setResult({ ...data, passed });
       setAttempts(prev => prev + 1);
+
+      await fetch('/api/log-attempt', {
+        method: 'POST',
+        body: JSON.stringify({
+          levelNumber: level.number,
+          userPrompt,
+          targetPrompt: level.targetConversation[0].content,
+          score: data.score,
+          passed,
+          timestamp: new Date().toISOString(),
+        }),
+      });
     } catch (error) {
       console.error('Error processing prompt:', error);
     } finally {
