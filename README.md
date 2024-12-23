@@ -1,6 +1,6 @@
-# Prompt Ops - AI Prompt Engineering Game
+# Promptact - AI Prompt Engineering Game
 
-Prompt Ops is an interactive game designed to help users learn and master the art of prompt engineering. Players are challenged to reverse-engineer system prompts by observing AI conversations and crafting their own prompts to match the target behavior.
+Promptact is an interactive game designed to help users learn and master the art of prompt engineering. Players are challenged to reverse-engineer system prompts by observing AI conversations and crafting their own prompts to match the target behavior.
 
 ## Features
 
@@ -9,7 +9,6 @@ Prompt Ops is an interactive game designed to help users learn and master the ar
 - 💡 Helpful hints and feedback
 - 📊 Real-time similarity scoring
 - 🔄 Instant AI response testing
-- 🎉 Progress tracking and completion rewards
 
 ## Getting Started
 
@@ -24,8 +23,8 @@ Prompt Ops is an interactive game designed to help users learn and master the ar
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/detextit/promptops.git
-cd promptops
+git clone https://github.com/detextit/promptact.git
+cd promptact
 ```
 
 2. Install dependencies:
@@ -67,7 +66,7 @@ npm run dev
 ## Project Structure
 
 ```
-promptops/
+promptact/
 ├── src/
 │ ├── app/ # Next.js app router
 │ ├── components/ # React components
