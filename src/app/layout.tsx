@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Deprompt',
-  description: 'Prompt smarter, play harder!',
+  title: 'Prompt Ops',
+  description: 'Unlock the secrets of AI, one prompt at a time!',
 }
 
 export default function RootLayout({

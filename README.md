@@ -24,8 +24,8 @@ De Prompt is an interactive game designed to help users learn and master the art
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/deprompt.git
-cd deprompt
+git clone https://github.com/detextit/promptops.git
+cd promptops
 ```
 
 2. Install dependencies:
@@ -67,7 +67,7 @@ npm run dev
 ## Project Structure
 
 ```
-deprompt/
+promptops/
 ├── src/
 │ ├── app/ # Next.js app router
 │ ├── components/ # React components
