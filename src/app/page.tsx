@@ -1,15 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import GameLevel from '@/components/GameLevel'
 import { levels } from '@/data/levels'
 import { Righteous } from 'next/font/google'
+import Cookies from 'js-cookie'
 const righteous = Righteous({ weight: '400', subsets: ['latin'] })
 
 export default function Home() {
   const [currentLevel, setCurrentLevel] = useState(0)
   const [gameStarted, setGameStarted] = useState(false)
   const [gameCompleted, setGameCompleted] = useState(false)
+  const [showSystemPromptModal, setShowSystemPromptModal] = useState(false)
 
   const handleLevelComplete = () => {
     if (currentLevel === levels.length - 1) {
@@ -17,6 +19,23 @@ export default function Home() {
     } else {
       setCurrentLevel(prev => prev + 1)
     }
+  }
+
+  const handleStartGame = () => {
+    const hasSeenPromptInfo = Cookies.get('hasSeenPromptInfo')
+    if (!hasSeenPromptInfo) {
+      setShowSystemPromptModal(true)
+    } else {
+      setGameStarted(true)
+    }
+  }
+
+  const handleCloseModal = (doNotShowAgain: boolean) => {
+    if (doNotShowAgain) {
+      Cookies.set('hasSeenPromptInfo', 'true', { expires: 365 })
+    }
+    setShowSystemPromptModal(false)
+    setGameStarted(true)
   }
 
   if (gameCompleted) {
@@ -53,6 +72,49 @@ export default function Home() {
   if (!gameStarted) {
     return (
       <main className="min-h-screen bg-gray-900 flex items-center justify-center p-8">
+        {showSystemPromptModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl max-w-2xl w-full p-6 shadow-2xl">
+              <h3 className={`${righteous.className} text-2xl text-blue-900 mb-4`}>
+                Understanding System Prompts 🤖
+              </h3>
+              <div className="prose prose-sm text-gray-700 mb-6">
+                <p>
+                  A system prompt is a set of instructions given to an AI that defines how it should behave and respond.
+                  Think of it as setting the AI's personality and rules of engagement.
+                </p>
+                <p>
+                  For example, a system prompt might tell the AI to:
+                </p>
+                <ul>
+                  <li>Act as a helpful coding tutor</li>
+                  <li>Respond in the style of Shakespeare</li>
+                  <li>Always provide step-by-step explanations</li>
+                </ul>
+                <p className="font-bold text-lg text-blue-600 border-l-4 border-blue-600 pl-4 my-4">
+                  Your mission is to figure out what system prompt was used to generate the AI's responses in each level.
+                </p>
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    onChange={(e) => handleCloseModal(e.target.checked)}
+                    className="rounded border-gray-300"
+                  />
+                  Don't show this again
+                </label>
+                <button
+                  onClick={() => handleCloseModal(false)}
+                  className={`${righteous.className} bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors`}
+                >
+                  Got it!
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="max-w-2xl w-full text-center space-y-8">
           <div className={righteous.className}>
             <h1 className="text-5xl font-bold text-amber-400 mb-4 tracking-wider">
@@ -90,7 +152,7 @@ export default function Home() {
             </div>
 
             <button
-              onClick={() => setGameStarted(true)}
+              onClick={handleStartGame}
               className={`${righteous.className} inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-gray-900 px-8 py-3 rounded-lg text-lg font-bold shadow-lg transition-all hover:scale-105`}
             >
               <span>▶️</span>
