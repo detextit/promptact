@@ -112,258 +112,95 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
 
   return (
     <div {...swipeHandlers} className="min-h-screen grid grid-cols-1 md:grid-cols-2">
-      {/* Mobile Navigation */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900 md:hidden">
-        <div className="flex justify-between items-center p-4">
+      {/* Mobile Navigation - Moved to bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-gray-900/90 backdrop-blur-sm md:hidden">
+        <div className="flex justify-between items-center px-4 py-2">
           <button
             onClick={() => setActivePanel('target')}
-            className={`${righteous.className} px-4 py-2 rounded-lg transition-all ${
+            className={`${righteous.className} px-4 py-2 rounded-lg transition-all flex items-center gap-2 ${
               activePanel === 'target' 
                 ? 'bg-amber-400 text-amber-900' 
                 : 'bg-gray-800 text-gray-400'
             }`}
           >
-            Target
+            <span>👈</span>
+            <span>Target</span>
           </button>
           <button
             onClick={() => setActivePanel('user')}
-            className={`${righteous.className} px-4 py-2 rounded-lg transition-all ${
+            className={`${righteous.className} px-4 py-2 rounded-lg transition-all flex items-center gap-2 ${
               activePanel === 'user' 
                 ? 'bg-blue-400 text-blue-900' 
                 : 'bg-gray-800 text-gray-400'
             }`}
           >
-            Your Input
+            <span>Guess</span>
+            <span>👉</span>
           </button>
         </div>
+
+        {/* Action Hint */}
+        <div className={`${righteous.className} text-xs text-center pb-1 text-gray-400`}>
+          {activePanel === 'target' ? (
+            <span>
+              Swipe left or tap "Guess" to start →
+            </span>
+          ) : (
+            <span>
+              ← Swipe right or tap "Target" to review
+            </span>
+          )}
+        </div>
       </div>
+
+      {/* Adjust padding for bottom navigation */}
+      <style jsx global>{`
+        @media (max-width: 768px) {
+          .min-h-screen {
+            padding-bottom: 4rem;
+            padding-top: 1rem;
+          }
+        }
+      `}</style>
 
       {/* Target Side */}
-      <div className={`bg-amber-400 p-8 relative transition-transform duration-300 md:translate-x-0 ${
+      <div className={`fixed inset-0 md:relative bg-amber-400 transition-transform duration-300 md:translate-x-0 ${
         activePanel === 'target' || window.innerWidth >= 768 ? 'translate-x-0' : '-translate-x-full'
-      } ${activePanel === 'target' ? 'min-h-screen' : 'hidden md:block'}`}>
-        <div className="mb-8 md:mb-12 text-center">
-          <h2 className="text-xl md:text-2xl font-bold text-amber-900 inline-flex items-center gap-2">
-            <span>🎯</span>
-            Target Conversation
-          </h2>
-        </div>
+      } ${activePanel === 'target' ? 'block' : 'hidden md:block'}`}>
+        <div className="h-full overflow-y-auto pb-16 p-4 md:p-8">
+          <div className="mb-4 md:mb-12 text-center">
+            <h2 className="text-lg md:text-2xl font-bold text-amber-900 inline-flex items-center gap-2">
+              <span>🎯</span>
+              Target Conversation
+            </h2>
+          </div>
 
-        <div className="max-w-2xl space-y-6">
-          <div>
-            <div className="text-amber-900 text-sm font-bold mb-1 uppercase tracking-wide">
-              AI INSTRUCTIONS:
-            </div>
-            <div className={`bg-cream-50/80 rounded-lg p-4 shadow-xl transition-all ${
-              ((result?.score && result.score >= level.minimumScore) || hasReachedMaxTries) 
-                ? 'animate-glow bg-cream-50' 
-                : ''
-            }`}>
-              <div className="text-gray-600 prose prose-sm">
-                {(result?.score && result.score >= level.minimumScore) || hasReachedMaxTries ? (
-                  <ReactMarkdown>{level.targetConversation[0].content}</ReactMarkdown>
-                ) : (
-                  <div className={`${righteous.className} text-amber-800 text-center py-2`}>
-                    🔒 ACHIEVE {(level.minimumScore * 100).toFixed(0)}% MATCH TO DECRYPT SYSTEM PROMPT 🔒
-                  </div>
-                )}
+          <div className="max-w-2xl space-y-6">
+            <div>
+              <div className="text-amber-900 text-sm font-bold mb-1 uppercase tracking-wide">
+                AI INSTRUCTIONS:
               </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="bg-amber-900/10 rounded-xl p-4 backdrop-blur-sm">
-              <div className={`${righteous.className} text-amber-900 text-sm font-medium mb-4 tracking-wide flex items-center gap-2`}>
-                <span>🔍 TARGET INTERACTION TO REPLICATE</span>
-              </div>
-              <div className="space-y-4">
-                <ChatMessage 
-                  role="User" 
-                  content={level.targetConversation[1].content} 
-                />
-                <ChatMessage 
-                  role="AI" 
-                  content={level.targetConversation[2].content} 
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Intel section with navigation */}
-          <div className="bg-white/90 rounded-lg p-4">
-            <div className="text-gray-700 prose prose-sm">
-              <div className={`${righteous.className} text-amber-800 text-sm font-medium mb-1 tracking-wide flex justify-between items-center gap-2`}>
-                <span>MISSION INTEL</span>
-                {level.hint.length > 1 && (
-                  <span className="text-sm text-amber-700">
-                    {currentHintIndex + 1} / {level.hint.length}
-                  </span>
-                )}
-              </div>
-              <ReactMarkdown>{level.hint[currentHintIndex]}</ReactMarkdown>
-              {level.hint.length > 1 && (
-                <div className="mt-4 flex justify-between items-center">
-                  <button
-                    onClick={() => setCurrentHintIndex(i => Math.max(0, i - 1))}
-                    disabled={currentHintIndex === 0}
-                    className={`${righteous.className} text-amber-900 hover:text-amber-700 disabled:opacity-50 text-sm`}
-                  >
-                    ← Previous Intel
-                  </button>
-                  <button
-                    onClick={() => setCurrentHintIndex(i => Math.min(level.hint.length - 1, i + 1))}
-                    disabled={currentHintIndex === level.hint.length - 1}
-                    className={`${righteous.className} text-amber-900 hover:text-amber-700 disabled:opacity-50 text-sm`}
-                  >
-                    Next Intel →
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* User Side */}
-      <div className={`bg-blue-400 p-8 relative transition-transform duration-300 md:translate-x-0 ${
-        activePanel === 'user' || window.innerWidth >= 768 ? 'translate-x-0' : 'translate-x-full'
-      } ${activePanel === 'user' ? 'min-h-screen' : 'hidden md:block'}`}>
-        <div className="mb-8 md:mb-12 text-center">
-          <h2 className="text-xl md:text-2xl font-bold text-blue-900 inline-flex items-center gap-2">
-            {result 
-              ? <>
-                  <span>📊</span>
-                  <span className="text-base md:text-2xl">
-                    Score: {(result.score * 100).toFixed(1)}% / Required: {(level.minimumScore * 100).toFixed(1)}%
-                  </span>
-                </>
-              : <>
-                  <span>🎮</span>
-                  Guess the Prompt!
-                </>
-            }
-          </h2>
-          
-          <div className={`${righteous.className} mt-4 flex items-center justify-center gap-2`}>
-            <div className="bg-blue-900/10 backdrop-blur-sm rounded-lg px-6 py-3 inline-flex items-center gap-3">
-              <span className="text-blue-900 tracking-wide">ATTEMPTS:</span>
-              {[...Array(maxTries)].map((_, i) => (
-                <span 
-                  key={i} 
-                  className={`inline-block w-4 h-4 rounded-full border-2 border-white shadow-lg ${
-                    i < maxTries - attempts 
-                      ? 'bg-green-500 animate-pulse' 
-                      : 'bg-red-500'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-2xl space-y-6">
-          <div>
-            <div className={`${righteous.className} text-blue-900 text-sm font-bold mb-1 uppercase tracking-wide`}>
-              YOUR AI INSTRUCTIONS:
-            </div>
-            <div className="bg-white rounded-lg p-4 shadow-lg">
-              <textarea
-                value={userPrompt}
-                onChange={(e) => setUserPrompt(e.target.value)}
-                placeholder="Enter your system prompt..."
-                className="w-full h-24 text-gray-800 resize-none focus:outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center relative">
-            <button
-              onClick={handleSubmit}
-              disabled={isProcessing || !userPrompt.trim() || hasReachedMaxTries || result?.passed}
-              className={`${righteous.className} relative bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 md:px-8 py-3 rounded-lg text-sm md:text-base shadow-lg transition-all ${
-                !isProcessing && !hasReachedMaxTries && userPrompt.trim() 
-                  ? 'hover:scale-105 border-2 border-white/80' 
+              <div className={`bg-cream-50/80 rounded-lg p-4 shadow-xl transition-all ${
+                ((result?.score && result.score >= level.minimumScore) || hasReachedMaxTries) 
+                  ? 'animate-glow bg-cream-50' 
                   : ''
-              } flex-1 md:flex-none md:w-40`}
-            >
-              {isProcessing ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                  <span>PROCESSING</span>
-                </div>
-              ) : hasReachedMaxTries ? (
-                <span className="flex items-center justify-center gap-2">
-                  LOCKED 🔒
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  DEPLOY 🚀
-                </span>
-              )}
-            </button>
-
-            {/* Duplicate Warning */}
-            {showDuplicateWarning && (
-              <div className="absolute -top-12 left-0 right-0 bg-yellow-500 text-yellow-900 px-4 py-2 rounded-lg text-sm text-center animate-fade-in">
-                You've already tried this prompt. Update the prompt and try again.
-              </div>
-            )}
-
-            <button
-              onClick={onComplete}
-              disabled={isProcessing}
-              className={`${righteous.className} ${
-                hasReachedMaxTries || result?.passed
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50'
-              } px-4 md:px-6 py-3 rounded-lg text-sm md:text-base shadow-lg transition-all hover:scale-105 flex-1 md:flex-none disabled:opacity-50 disabled:hover:bg-transparent`}
-            >
-              {hasReachedMaxTries || result?.passed ? (
-                <span className="flex items-center justify-center gap-2">
-                  NEXT MISSION ▶︎
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  SKIP MISSION ▶︎▶︎
-                </span>
-              )}
-            </button>
-          </div>
-
-          {hasReachedMaxTries && !result?.passed && (
-            <div className="bg-white/90 rounded-lg p-4 mt-4">
-              <div className="text-sm space-y-3">
-                <div className="text-red-600 font-bold">
-                  Maximum attempts reached! AI Instructions revealed.
+              }`}>
+                <div className="text-gray-600 prose prose-sm">
+                  {(result?.score && result.score >= level.minimumScore) || hasReachedMaxTries ? (
+                    <ReactMarkdown>{level.targetConversation[0].content}</ReactMarkdown>
+                  ) : (
+                    <div className={`${righteous.className} text-amber-800 text-center py-2`}>
+                      🔒 ACHIEVE {(level.minimumScore * 100).toFixed(0)}% MATCH TO DECRYPT SYSTEM PROMPT 🔒
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          )}
 
-          {result && !isProcessing && (
             <div className="space-y-4">
-              {result.score < level.minimumScore && (
-                <div className="bg-white/90 rounded-lg p-4">
-                  <div className="text-sm space-y-3">
-                    <div className={`${righteous.className} text-blue-900 text-sm font-medium mb-2 tracking-wide flex items-center gap-2`}>
-                      <span>📡 Feedback to Improve Decryption</span>
-                    </div>
-                    <div className="text-gray-700">
-                      {result.hint}
-                    </div>
-                    <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                        style={{ width: `${(result.score / level.minimumScore) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="bg-blue-900/10 rounded-xl p-4 backdrop-blur-sm">
-                <div className={`${righteous.className} text-blue-900 text-sm font-medium mb-4 tracking-wide flex items-center gap-2`}>
-                  <span>🔄 YOUR AI INTERACTION RESULT</span>
+              <div className="bg-amber-900/10 rounded-xl p-4 backdrop-blur-sm">
+                <div className={`${righteous.className} text-amber-900 text-sm font-medium mb-4 tracking-wide flex items-center gap-2`}>
+                  <span>🔍 TARGET INTERACTION TO REPLICATE</span>
                 </div>
                 <div className="space-y-4">
                   <ChatMessage 
@@ -371,33 +208,229 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
                     content={level.targetConversation[1].content} 
                   />
                   <ChatMessage 
-                    role="Your AI" 
-                    content={result.response} 
+                    role="AI" 
+                    content={level.targetConversation[2].content} 
                   />
                 </div>
               </div>
-
-              {result.passed && (
-                <button
-                  onClick={onComplete}
-                  className={`${righteous.className} w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg text-sm md:text-base mt-8 shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2`}
-                >
-                  <span>🌟</span>
-                  <span className="text-sm md:text-base">
-                    MISSION COMPLETE! PROCEED TO NEXT OBJECTIVE →
-                  </span>
-                </button>
-              )}
             </div>
-          )}
+
+            {/* Intel section with navigation */}
+            <div className="bg-white/90 rounded-lg p-4">
+              <div className="text-gray-700 prose prose-sm">
+                <div className={`${righteous.className} text-amber-800 text-sm font-medium mb-1 tracking-wide flex justify-between items-center gap-2`}>
+                  <span>MISSION INTEL</span>
+                  {level.hint.length > 1 && (
+                    <span className="text-sm text-amber-700">
+                      {currentHintIndex + 1} / {level.hint.length}
+                    </span>
+                  )}
+                </div>
+                <ReactMarkdown>{level.hint[currentHintIndex]}</ReactMarkdown>
+                {level.hint.length > 1 && (
+                  <div className="mt-4 flex justify-between items-center">
+                    <button
+                      onClick={() => setCurrentHintIndex(i => Math.max(0, i - 1))}
+                      disabled={currentHintIndex === 0}
+                      className={`${righteous.className} text-amber-900 hover:text-amber-700 disabled:opacity-50 text-sm`}
+                    >
+                      ← Previous Intel
+                    </button>
+                    <button
+                      onClick={() => setCurrentHintIndex(i => Math.min(level.hint.length - 1, i + 1))}
+                      disabled={currentHintIndex === level.hint.length - 1}
+                      className={`${righteous.className} text-amber-900 hover:text-amber-700 disabled:opacity-50 text-sm`}
+                    >
+                      Next Intel →
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Updated Mobile Swipe Hint */}
+      {/* User Side */}
+      <div className={`fixed inset-0 md:relative bg-blue-400 transition-transform duration-300 md:translate-x-0 ${
+        activePanel === 'user' || window.innerWidth >= 768 ? 'translate-x-0' : 'translate-x-full'
+      } ${activePanel === 'user' ? 'block' : 'hidden md:block'}`}>
+        <div className="h-full overflow-y-auto pb-16 p-4 md:p-8">
+          <div className="mb-4 md:mb-12 text-center">
+            <h2 className="text-lg md:text-2xl font-bold text-blue-900 inline-flex items-center gap-2">
+              {result 
+                ? <>
+                    <span>📊</span>
+                    <span className="text-base md:text-2xl">
+                      Score: {(result.score * 100).toFixed(1)}% / Required: {(level.minimumScore * 100).toFixed(1)}%
+                    </span>
+                  </>
+                : <>
+                    <span>🎮</span>
+                    Guess the Prompt!
+                  </>
+              }
+            </h2>
+            
+            <div className={`${righteous.className} mt-4 flex items-center justify-center gap-2`}>
+              <div className="bg-blue-900/10 backdrop-blur-sm rounded-lg px-6 py-3 inline-flex items-center gap-3">
+                <span className="text-blue-900 tracking-wide">ATTEMPTS:</span>
+                {[...Array(maxTries)].map((_, i) => (
+                  <span 
+                    key={i} 
+                    className={`inline-block w-4 h-4 rounded-full border-2 border-white shadow-lg ${
+                      i < maxTries - attempts 
+                        ? 'bg-green-500 animate-pulse' 
+                        : 'bg-red-500'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="max-w-2xl space-y-6">
+            <div>
+              <div className={`${righteous.className} text-blue-900 text-sm font-bold mb-1 uppercase tracking-wide`}>
+                YOUR AI INSTRUCTIONS:
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow-lg">
+                <textarea
+                  value={userPrompt}
+                  onChange={(e) => setUserPrompt(e.target.value)}
+                  placeholder="Enter your system prompt..."
+                  className="w-full h-24 text-gray-800 resize-none focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center relative">
+              <button
+                onClick={handleSubmit}
+                disabled={isProcessing || !userPrompt.trim() || hasReachedMaxTries || result?.passed}
+                className={`${righteous.className} relative bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 md:px-8 py-3 rounded-lg text-sm md:text-base shadow-lg transition-all ${
+                  !isProcessing && !hasReachedMaxTries && userPrompt.trim() 
+                    ? 'hover:scale-105 border-2 border-white/80' 
+                    : ''
+                } flex-1 md:flex-none md:w-40`}
+              >
+                {isProcessing ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                    <span>PROCESSING</span>
+                  </div>
+                ) : hasReachedMaxTries ? (
+                  <span className="flex items-center justify-center gap-2">
+                    LOCKED 🔒
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    DEPLOY 🚀
+                  </span>
+                )}
+              </button>
+
+              {/* Duplicate Warning */}
+              {showDuplicateWarning && (
+                <div className="absolute -top-12 left-0 right-0 bg-yellow-500 text-yellow-900 px-4 py-2 rounded-lg text-sm text-center animate-fade-in">
+                  You've already tried this prompt. Update the prompt and try again.
+                </div>
+              )}
+
+              <button
+                onClick={onComplete}
+                disabled={isProcessing}
+                className={`${righteous.className} ${
+                  hasReachedMaxTries || result?.passed
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50'
+                } px-4 md:px-6 py-3 rounded-lg text-sm md:text-base shadow-lg transition-all hover:scale-105 flex-1 md:flex-none disabled:opacity-50 disabled:hover:bg-transparent`}
+              >
+                {hasReachedMaxTries || result?.passed ? (
+                  <span className="flex items-center justify-center gap-2">
+                    NEXT MISSION ▶︎
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    SKIP MISSION ▶︎▶︎
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {hasReachedMaxTries && !result?.passed && (
+              <div className="bg-white/90 rounded-lg p-4 mt-4">
+                <div className="text-sm space-y-3">
+                  <div className="text-red-600 font-bold">
+                    Maximum attempts reached! AI Instructions revealed.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {result && !isProcessing && (
+              <div className="space-y-4">
+                {result.score < level.minimumScore && (
+                  <div className="bg-white/90 rounded-lg p-4">
+                    <div className="text-sm space-y-3">
+                      <div className={`${righteous.className} text-blue-900 text-sm font-medium mb-2 tracking-wide flex items-center gap-2`}>
+                        <span>📡 Feedback to Improve Decryption</span>
+                      </div>
+                      <div className="text-gray-700">
+                        {result.hint}
+                      </div>
+                      <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${(result.score / level.minimumScore) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="bg-blue-900/10 rounded-xl p-4 backdrop-blur-sm">
+                  <div className={`${righteous.className} text-blue-900 text-sm font-medium mb-4 tracking-wide flex items-center gap-2`}>
+                    <span>🔄 YOUR AI INTERACTION RESULT</span>
+                  </div>
+                  <div className="space-y-4">
+                    <ChatMessage 
+                      role="User" 
+                      content={level.targetConversation[1].content} 
+                    />
+                    <ChatMessage 
+                      role="Your AI" 
+                      content={result.response} 
+                    />
+                  </div>
+                </div>
+
+                {result.passed && (
+                  <button
+                    onClick={onComplete}
+                    className={`${righteous.className} w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg text-sm md:text-base mt-8 shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2`}
+                  >
+                    <span>🌟</span>
+                    <span className="text-sm md:text-base">
+                      MISSION COMPLETE! PROCEED TO NEXT OBJECTIVE →
+                    </span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Updated Mobile Swipe Hint - show only on first load */}
       {showSwipeHint && (
-        <div className="fixed bottom-4 left-0 right-0 text-center md:hidden animate-fade-out">
-          <div className={`${righteous.className} text-sm text-gray-600 bg-white/80 mx-auto inline-block px-4 py-2 rounded-full`}>
-            Swipe left/right to switch views
+        <div className="fixed bottom-28 left-0 right-0 text-center md:hidden animate-fade-out">
+          <div className={`${righteous.className} text-sm text-gray-600 bg-white/90 mx-auto inline-block px-4 py-2 rounded-full shadow-lg`}>
+            {activePanel === 'target' ? (
+              <span>👆 Scroll to view Mission Intels</span>
+            ) : (
+              <span>👆 Review target before guessing</span>
+            )}
           </div>
         </div>
       )}
