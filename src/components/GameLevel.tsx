@@ -120,8 +120,9 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
     onSwipedRight: () => setActivePanel('target'),
     trackMouse: true,
     trackTouch: true,
-    preventDefaultTouchmoveEvent: true,
-    delta: 50
+    preventScrollOnSwipe: true,
+    delta: 50,
+    touchEventOptions: { passive: false }
   });
 
   return (
