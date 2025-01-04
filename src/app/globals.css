@@ -8,8 +8,14 @@
     height: 100%;
   }
 
-  /* Adjust spacing for mobile */
+  /* Improve mobile readability */
   .prose {
-    font-size: 0.9rem;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  /* Add touch-action properties for better swipe handling */
+  .swipeable-container {
+    touch-action: pan-y pinch-zoom;
   }
 } 

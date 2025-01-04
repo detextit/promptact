@@ -26,6 +26,8 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
   const [showSwipeHint, setShowSwipeHint] = useState(true);
   const [lastSubmittedPrompt, setLastSubmittedPrompt] = useState('');
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const [loadingStartTime, setLoadingStartTime] = useState<number | null>(null);
+  const MINIMUM_LOADING_TIME = 750;
 
   useEffect(() => {
     setUserPrompt('');
@@ -47,11 +49,13 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
   const handleSubmit = async () => {
     if (userPrompt === lastSubmittedPrompt) {
       setShowDuplicateWarning(true);
-      setTimeout(() => setShowDuplicateWarning(false), 3000); // Hide warning after 3 seconds
+      setTimeout(() => setShowDuplicateWarning(false), 3000);
       return;
     }
 
     setIsProcessing(true);
+    setLoadingStartTime(Date.now());
+
     try {
       const response = await fetch('/api/test-prompt', {
         method: 'POST',
@@ -63,6 +67,12 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
       
       const data = await response.json();
       const passed = data.score >= level.minimumScore;
+      
+      const loadingDuration = Date.now() - (loadingStartTime || Date.now());
+      if (loadingDuration < MINIMUM_LOADING_TIME) {
+        await new Promise(resolve => setTimeout(resolve, MINIMUM_LOADING_TIME - loadingDuration));
+      }
+
       setResult({ ...data, passed });
       setAttempts(prev => prev + 1);
       setLastSubmittedPrompt(userPrompt);
@@ -82,6 +92,7 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
       console.error('Error processing prompt:', error);
     } finally {
       setIsProcessing(false);
+      setLoadingStartTime(null);
     }
   };
 
@@ -107,7 +118,10 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => setActivePanel('user'),
     onSwipedRight: () => setActivePanel('target'),
-    trackMouse: false
+    trackMouse: true,
+    trackTouch: true,
+    preventDefaultTouchmoveEvent: true,
+    delta: 50
   });
 
   return (
@@ -339,7 +353,7 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
 
               <button
                 onClick={onComplete}
-                disabled={isProcessing}
+                disabled={isProcessing || loadingStartTime !== null}
                 className={`${righteous.className} ${
                   hasReachedMaxTries || result?.passed
                     ? 'bg-blue-600 text-white hover:bg-blue-700'

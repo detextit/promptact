@@ -44,14 +44,14 @@ export default function Home() {
         <div className="max-w-2xl mx-auto text-center text-white">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">🎉 Congratulations!</h1>
           <p className="text-xl mb-8">
-            You've completed all levels and mastered the art of prompt engineering!
+            You've completed all levels of Promptact 🤖!
           </p>
           <div className="space-y-4">
             <p className="text-lg">
-              You've learned how to craft effective prompts and understand the nuances of AI communication.
+              You've learned how to craft effective system prompts and understand AI bots.
             </p>
             <p className="text-lg">
-              Keep practicing and experimenting with different prompts to become even better!
+              Keep practicing and experimenting! See you in the next mission ❤️
             </p>
           </div>
           <button
