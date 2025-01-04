@@ -40,9 +40,9 @@ export default function Home() {
 
   if (gameCompleted) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-green-400 to-green-600 p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-green-400 to-green-600 p-4 md:p-8 flex items-center justify-center">
         <div className="max-w-2xl mx-auto text-center text-white">
-          <h1 className="text-5xl font-bold mb-6">🎉 Congratulations!</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">🎉 Congratulations!</h1>
           <p className="text-xl mb-8">
             You've completed all levels and mastered the art of prompt engineering!
           </p>
@@ -71,31 +71,31 @@ export default function Home() {
 
   if (!gameStarted) {
     return (
-      <main className="min-h-screen bg-gray-900 flex items-center justify-center p-8">
+      <main className="min-h-screen bg-gray-900 flex items-center justify-center p-4 md:p-8">
         {showSystemPromptModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl max-w-2xl w-full p-6 shadow-2xl">
-              <h3 className={`${righteous.className} text-2xl text-blue-900 mb-4`}>
+            <div className="bg-white rounded-xl max-w-2xl w-full p-4 md:p-6 shadow-2xl mx-4 overflow-y-auto max-h-[90vh]">
+              <h3 className={`${righteous.className} text-xl md:text-2xl text-blue-900 mb-4`}>
                 Understanding System Prompts 🤖
               </h3>
-              <div className="prose prose-sm text-gray-700 mb-6">
-                <p>
+              <div className="prose prose-sm md:prose-base text-gray-700 mb-6">
+                <p className="text-sm md:text-base">
                   A system prompt is a set of instructions given to an AI that defines how it should behave and respond.
                   Think of it as setting the AI's personality and rules of engagement.
                 </p>
-                <p>
+                <p className="text-sm md:text-base">
                   For example, a system prompt might tell the AI to:
                 </p>
-                <ul>
+                <ul className="text-sm md:text-base">
                   <li>Act as a helpful coding tutor</li>
                   <li>Respond in the style of Shakespeare</li>
                   <li>Always provide step-by-step explanations</li>
                 </ul>
-                <p className="font-bold text-lg text-blue-600 border-l-4 border-blue-600 pl-4 my-4">
+                <p className="font-bold text-base md:text-lg text-blue-600 border-l-4 border-blue-600 pl-4 my-4">
                   Your mission is to figure out what system prompt was used to generate the AI's responses in each level.
                 </p>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <label className="flex items-center gap-2 text-sm text-gray-600">
                   <input
                     type="checkbox"
@@ -106,7 +106,7 @@ export default function Home() {
                 </label>
                 <button
                   onClick={() => handleCloseModal(false)}
-                  className={`${righteous.className} bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors`}
+                  className={`${righteous.className} w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors`}
                 >
                   Got it!
                 </button>
@@ -115,36 +115,36 @@ export default function Home() {
           </div>
         )}
 
-        <div className="max-w-2xl w-full text-center space-y-8">
+        <div className="max-w-2xl w-full text-center space-y-6 md:space-y-8 px-4">
           <div className={righteous.className}>
-            <h1 className="text-5xl font-bold text-amber-400 mb-4 tracking-wider">
+            <h1 className="text-4xl md:text-5xl font-bold text-amber-400 mb-4 tracking-wider">
               PROMPTACT
             </h1>
-            <p className="text-blue-400 text-xl mb-8">
+            <p className="text-lg md:text-xl text-blue-400 mb-8">
               TACTICAL PROMPT ENGINEERING SIMULATOR
             </p>
           </div>
 
-          <div className="bg-gray-800/50 rounded-xl p-6 backdrop-blur">
-            <p className="text-gray-300 mb-6">
+          <div className="bg-gray-800/50 rounded-xl p-4 md:p-6 backdrop-blur">
+            <p className="text-gray-300 mb-6 text-sm md:text-base">
               Your mission: Reverse engineer AI system prompts through tactical observation and analysis.
             </p>
 
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               <div className="bg-gray-800 rounded-lg p-4">
-                <div className="text-amber-400 text-2xl mb-2">🎯</div>
+                <div className="text-amber-400 text-xl md:text-2xl mb-2">🎯</div>
                 <div className="text-gray-300 text-sm">
                   Analyze Target Behavior
                 </div>
               </div>
               <div className="bg-gray-800 rounded-lg p-4">
-                <div className="text-amber-400 text-2xl mb-2">💡</div>
+                <div className="text-amber-400 text-xl md:text-2xl mb-2">💡</div>
                 <div className="text-gray-300 text-sm">
                   Deploy Strategic Prompts
                 </div>
               </div>
               <div className="bg-gray-800 rounded-lg p-4">
-                <div className="text-amber-400 text-2xl mb-2">⚡</div>
+                <div className="text-amber-400 text-xl md:text-2xl mb-2">⚡</div>
                 <div className="text-gray-300 text-sm">
                   Master AI Response Patterns
                 </div>
@@ -153,14 +153,14 @@ export default function Home() {
 
             <button
               onClick={handleStartGame}
-              className={`${righteous.className} inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-gray-900 px-8 py-3 rounded-lg text-lg font-bold shadow-lg transition-all hover:scale-105`}
+              className={`${righteous.className} inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-gray-900 px-6 md:px-8 py-3 rounded-lg text-base md:text-lg font-bold shadow-lg transition-all hover:scale-105`}
             >
               <span>▶️</span>
               BEGIN MISSION
             </button>
           </div>
 
-          <div className="text-gray-500 text-sm">
+          <div className="text-gray-500 text-xs md:text-sm">
             {levels.length} missions available • Difficulty increases with each level
           </div>
         </div>

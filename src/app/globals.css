@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities; 
+@tailwind utilities;
+
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Adjust spacing for mobile */
+  .prose {
+    font-size: 0.9rem;
+  }
+
+  /* Add padding-top to account for the mobile navigation */
+  .min-h-screen {
+    padding-top: 4rem;
+  }
+} 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Level } from '@/types';
 import ReactMarkdown from 'react-markdown';
 import { Righteous } from 'next/font/google';
+import { useSwipeable } from 'react-swipeable';
 const righteous = Righteous({ weight: '400', subsets: ['latin'] });
 
 interface GameLevelProps {
@@ -22,6 +23,8 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentHintIndex, setCurrentHintIndex] = useState(0);
   const [attempts, setAttempts] = useState(0);
+  const [activePanel, setActivePanel] = useState<'target' | 'user'>('target');
+  const [showSwipeHint, setShowSwipeHint] = useState(true);
 
   useEffect(() => {
     setUserPrompt('');
@@ -29,7 +32,16 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
     setShowHint(false);
     setCurrentHintIndex(0);
     setAttempts(0);
+    setActivePanel('target');
   }, [level.number]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSwipeHint(false);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSubmit = async () => {
     setIsProcessing(true);
@@ -71,9 +83,9 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
     <div className={`rounded-lg p-4 ${role === 'User' ? 'bg-green-50' : 'bg-white/90' } shadow-lg group relative`}>
       <div className={`${righteous.className} text-blue-800 text-sm font-medium mb-1 flex items-center gap-2`}>
         {role}
-        {role === 'Your AI' && (
-          <div className="invisible group-hover:visible absolute right-0 top-0 transform -translate-y-full bg-blue-900 text-white text-xs px-3 py-1 rounded-md shadow-lg whitespace-nowrap">
-            Response generated with your input as AI Instructions
+        {role === "Your AI Instructions" && (
+          <div className="invisible group-hover:visible absolute right-0 top-0 transform -translate-y-full bg-blue-900 text-white text-xs px-2 py-1 rounded-md shadow-lg max-w-[200px] md:max-w-none md:whitespace-nowrap">
+            Response generated with Your AI Instructions
           </div>
         )}
       </div>
@@ -90,10 +102,46 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
     setShowHint(!showHint);
   };
 
+  // Add swipe handlers
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => setActivePanel('user'),
+    onSwipedRight: () => setActivePanel('target'),
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: false
+  });
+
   return (
-    <div className="min-h-screen grid grid-cols-2">
+    <div {...swipeHandlers} className="min-h-screen grid grid-cols-1 md:grid-cols-2">
+      {/* Mobile Navigation */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900 md:hidden">
+        <div className="flex justify-between items-center p-4">
+          <button
+            onClick={() => setActivePanel('target')}
+            className={`${righteous.className} px-4 py-2 rounded-lg transition-all ${
+              activePanel === 'target' 
+                ? 'bg-amber-400 text-amber-900' 
+                : 'bg-gray-800 text-gray-400'
+            }`}
+          >
+            Target
+          </button>
+          <button
+            onClick={() => setActivePanel('user')}
+            className={`${righteous.className} px-4 py-2 rounded-lg transition-all ${
+              activePanel === 'user' 
+                ? 'bg-blue-400 text-blue-900' 
+                : 'bg-gray-800 text-gray-400'
+            }`}
+          >
+            Your Input
+          </button>
+        </div>
+      </div>
+
       {/* Target Side */}
-      <div className="bg-amber-400 p-8 relative">
+      <div className={`bg-amber-400 p-8 relative transition-transform duration-300 md:translate-x-0 ${
+        activePanel === 'target' || window.innerWidth >= 768 ? 'translate-x-0' : '-translate-x-full'
+      } ${activePanel === 'target' ? 'min-h-screen' : 'hidden md:block'}`}>
         <div className="absolute top-6 right-8">
           <button
             onClick={toggleHint}
@@ -104,8 +152,8 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
           </button>
         </div>
 
-        <div className="mb-12 text-center">
-          <h2 className="text-2xl font-bold text-amber-900 inline-flex items-center gap-2">
+        <div className="mb-8 md:mb-12 text-center">
+          <h2 className="text-xl md:text-2xl font-bold text-amber-900 inline-flex items-center gap-2">
             <span>🎯</span>
             Target Conversation
           </h2>
@@ -176,13 +224,17 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
       </div>
 
       {/* User Side */}
-      <div className="bg-blue-400 p-8">
-        <div className="mb-12 text-center">
-          <h2 className="text-2xl font-bold text-blue-900 inline-flex items-center gap-2">
+      <div className={`bg-blue-400 p-8 relative transition-transform duration-300 md:translate-x-0 ${
+        activePanel === 'user' || window.innerWidth >= 768 ? 'translate-x-0' : 'translate-x-full'
+      } ${activePanel === 'user' ? 'min-h-screen' : 'hidden md:block'}`}>
+        <div className="mb-8 md:mb-12 text-center">
+          <h2 className="text-xl md:text-2xl font-bold text-blue-900 inline-flex items-center gap-2">
             {result 
               ? <>
                   <span>📊</span>
-                  Score: {(result.score * 100).toFixed(1)}% / Required: {(level.minimumScore * 100).toFixed(1)}%
+                  <span className="text-base md:text-2xl">
+                    Score: {(result.score * 100).toFixed(1)}% / Required: {(level.minimumScore * 100).toFixed(1)}%
+                  </span>
                 </>
               : <>
                   <span>🎮</span>
@@ -223,40 +275,38 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
             </div>
           </div>
 
-          <div>
-            <div className="flex gap-4 items-center">
-              <button
-                onClick={handleSubmit}
-                disabled={isProcessing || !userPrompt.trim() || hasReachedMaxTries}
-                className={`${righteous.className} relative bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-8 py-3 rounded-lg text-base shadow-lg transition-all ${
-                  !isProcessing && !hasReachedMaxTries && userPrompt.trim() 
-                    ? 'hover:scale-105 border-2 border-white/80' 
-                    : ''
-                } w-40`}
-              >
-                {isProcessing ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                    <span>PROCESSING</span>
-                  </div>
-                ) : hasReachedMaxTries ? (
-                  <span className="flex items-center justify-center gap-2">
-                    LOCKED 🔒
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    DEPLOY 🚀
-                  </span>
-                )}
-              </button>
+          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+            <button
+              onClick={handleSubmit}
+              disabled={isProcessing || !userPrompt.trim() || hasReachedMaxTries}
+              className={`${righteous.className} relative bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 md:px-8 py-3 rounded-lg text-sm md:text-base shadow-lg transition-all ${
+                !isProcessing && !hasReachedMaxTries && userPrompt.trim() 
+                  ? 'hover:scale-105 border-2 border-white/80' 
+                  : ''
+              } flex-1 md:flex-none md:w-40`}
+            >
+              {isProcessing ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                  <span>PROCESSING</span>
+                </div>
+              ) : hasReachedMaxTries ? (
+                <span className="flex items-center justify-center gap-2">
+                  LOCKED 🔒
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  DEPLOY 🚀
+                </span>
+              )}
+            </button>
 
-              <button
-                onClick={onComplete}
-                className={`${righteous.className} bg-transparent border-2 border-blue-600 hover:bg-blue-50 text-blue-600 px-6 py-3 rounded-lg text-base shadow-lg transition-all hover:scale-105`}
-              >
-                {hasReachedMaxTries ? 'NEXT MISSION ▶︎' : 'SKIP MISSION ▶︎▶︎'}
-              </button>
-            </div>
+            <button
+              onClick={onComplete}
+              className={`${righteous.className} bg-transparent border-2 border-blue-600 hover:bg-blue-50 text-blue-600 px-4 md:px-6 py-3 rounded-lg text-sm md:text-base shadow-lg transition-all hover:scale-105 flex-1 md:flex-none`}
+            >
+              {hasReachedMaxTries ? 'NEXT MISSION ▶︎' : 'SKIP MISSION ▶︎▶︎'}
+            </button>
           </div>
 
           {hasReachedMaxTries && !result?.passed && (
@@ -264,33 +314,6 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
               <div className="text-sm space-y-3">
                 <div className="text-red-600 font-bold">
                   Maximum attempts reached! AI Instructions revealed.
-                </div>
-              </div>
-            </div>
-          )}
-
-          {isProcessing && (
-            <div className="space-y-4 animate-pulse">
-              <div className="bg-white/90 rounded-lg p-4">
-                <div className="flex space-x-4 items-center">
-                  <div className="h-4 w-4 bg-blue-200 rounded-full animate-pulse" />
-                  <div className="h-4 bg-blue-200 rounded w-3/4" />
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="bg-green-50 rounded-lg p-4">
-                  <div className="h-4 w-24 bg-green-100 rounded mb-2" />
-                  <div className="space-y-2">
-                    <div className="h-4 bg-green-100 rounded w-full" />
-                    <div className="h-4 bg-green-100 rounded w-5/6" />
-                  </div>
-                </div>
-                <div className="bg-white/90 rounded-lg p-4">
-                  <div className="h-4 w-24 bg-blue-100 rounded mb-2" />
-                  <div className="space-y-2">
-                    <div className="h-4 bg-blue-100 rounded w-full" />
-                    <div className="h-4 bg-blue-100 rounded w-4/6" />
-                  </div>
                 </div>
               </div>
             </div>
@@ -334,16 +357,27 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
               {result.passed && (
                 <button
                   onClick={onComplete}
-                  className={`${righteous.className} w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg text-base mt-8 shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2`}
+                  className={`${righteous.className} w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg text-sm md:text-base mt-8 shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2`}
                 >
                   <span>🌟</span>
-                  MISSION COMPLETE! PROCEED TO NEXT OBJECTIVE →
+                  <span className="text-sm md:text-base">
+                    MISSION COMPLETE! PROCEED TO NEXT OBJECTIVE →
+                  </span>
                 </button>
               )}
             </div>
           )}
         </div>
       </div>
+
+      {/* Updated Mobile Swipe Hint */}
+      {showSwipeHint && (
+        <div className="fixed bottom-4 left-0 right-0 text-center md:hidden animate-fade-out">
+          <div className={`${righteous.className} text-sm text-gray-600 bg-white/80 mx-auto inline-block px-4 py-2 rounded-full`}>
+            Swipe left/right to switch views
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
