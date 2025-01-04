@@ -19,20 +19,21 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
     hint: string;
     passed?: boolean;
   }>(null);
-  const [showHint, setShowHint] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentHintIndex, setCurrentHintIndex] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [activePanel, setActivePanel] = useState<'target' | 'user'>('target');
   const [showSwipeHint, setShowSwipeHint] = useState(true);
+  const [lastSubmittedPrompt, setLastSubmittedPrompt] = useState('');
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
 
   useEffect(() => {
     setUserPrompt('');
     setResult(null);
-    setShowHint(false);
     setCurrentHintIndex(0);
     setAttempts(0);
     setActivePanel('target');
+    setLastSubmittedPrompt('');
   }, [level.number]);
 
   useEffect(() => {
@@ -44,6 +45,12 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
   }, []);
 
   const handleSubmit = async () => {
+    if (userPrompt === lastSubmittedPrompt) {
+      setShowDuplicateWarning(true);
+      setTimeout(() => setShowDuplicateWarning(false), 3000); // Hide warning after 3 seconds
+      return;
+    }
+
     setIsProcessing(true);
     try {
       const response = await fetch('/api/test-prompt', {
@@ -58,6 +65,7 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
       const passed = data.score >= level.minimumScore;
       setResult({ ...data, passed });
       setAttempts(prev => prev + 1);
+      setLastSubmittedPrompt(userPrompt);
 
       await fetch('/api/log-attempt', {
         method: 'POST',
@@ -83,7 +91,7 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
     <div className={`rounded-lg p-4 ${role === 'User' ? 'bg-green-50' : 'bg-white/90' } shadow-lg group relative`}>
       <div className={`${righteous.className} text-blue-800 text-sm font-medium mb-1 flex items-center gap-2`}>
         {role}
-        {role === "Your AI Instructions" && (
+        {role === "Your AI" && (
           <div className="invisible group-hover:visible absolute right-0 top-0 transform -translate-y-full bg-blue-900 text-white text-xs px-2 py-1 rounded-md shadow-lg max-w-[200px] md:max-w-none md:whitespace-nowrap">
             Response generated with Your AI Instructions
           </div>
@@ -95,18 +103,10 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
     </div>
   );
 
-  const toggleHint = () => {
-    if (showHint) {
-      setCurrentHintIndex(0);
-    }
-    setShowHint(!showHint);
-  };
-
   // Add swipe handlers
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => setActivePanel('user'),
     onSwipedRight: () => setActivePanel('target'),
-    preventDefaultTouchmoveEvent: true,
     trackMouse: false
   });
 
@@ -142,16 +142,6 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
       <div className={`bg-amber-400 p-8 relative transition-transform duration-300 md:translate-x-0 ${
         activePanel === 'target' || window.innerWidth >= 768 ? 'translate-x-0' : '-translate-x-full'
       } ${activePanel === 'target' ? 'min-h-screen' : 'hidden md:block'}`}>
-        <div className="absolute top-6 right-8">
-          <button
-            onClick={toggleHint}
-            className={`${righteous.className} text-amber-900 hover:text-amber-700 flex items-center gap-2 text-sm bg-amber-100/50 px-4 py-2 rounded-full transition-all hover:bg-amber-100`}
-          >
-            <span>🔎</span>
-            {showHint ? "CLOSE INTEL" : "REQUEST INTEL"}
-          </button>
-        </div>
-
         <div className="mb-8 md:mb-12 text-center">
           <h2 className="text-xl md:text-2xl font-bold text-amber-900 inline-flex items-center gap-2">
             <span>🎯</span>
@@ -192,34 +182,38 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
             />
           </div>
 
-          {showHint && (
-            <div className="bg-white/90 rounded-lg p-4">
-              <div className="text-gray-700 prose prose-sm">
-                <ReactMarkdown>{level.hint[currentHintIndex]}</ReactMarkdown>
+          {/* Intel section with navigation */}
+          <div className="bg-white/90 rounded-lg p-4">
+            <div className="text-gray-700 prose prose-sm">
+              <div className={`${righteous.className} text-amber-800 text-sm font-medium mb-1 tracking-wide flex justify-between items-center gap-2`}>
+                <span>MISSION INTEL</span>
                 {level.hint.length > 1 && (
-                  <div className="mt-4 flex justify-between items-center">
-                    <button
-                      onClick={() => setCurrentHintIndex(i => Math.max(0, i - 1))}
-                      disabled={currentHintIndex === 0}
-                      className="text-blue-600 hover:text-blue-800 disabled:opacity-50"
-                    >
-                      ← Previous Intel
-                    </button>
-                    <span className="text-sm text-gray-500">
-                      {currentHintIndex + 1} / {level.hint.length}
-                    </span>
-                    <button
-                      onClick={() => setCurrentHintIndex(i => Math.min(level.hint.length - 1, i + 1))}
-                      disabled={currentHintIndex === level.hint.length - 1}
-                      className="text-blue-600 hover:text-blue-800 disabled:opacity-50"
-                    >
-                      Next Intel →
-                    </button>
-                  </div>
+                  <span className="text-sm text-amber-700">
+                    {currentHintIndex + 1} / {level.hint.length}
+                  </span>
                 )}
               </div>
+              <ReactMarkdown>{level.hint[currentHintIndex]}</ReactMarkdown>
+              {level.hint.length > 1 && (
+                <div className="mt-4 flex justify-between items-center">
+                  <button
+                    onClick={() => setCurrentHintIndex(i => Math.max(0, i - 1))}
+                    disabled={currentHintIndex === 0}
+                    className={`${righteous.className} text-amber-900 hover:text-amber-700 disabled:opacity-50 text-sm`}
+                  >
+                    ← Previous Intel
+                  </button>
+                  <button
+                    onClick={() => setCurrentHintIndex(i => Math.min(level.hint.length - 1, i + 1))}
+                    disabled={currentHintIndex === level.hint.length - 1}
+                    className={`${righteous.className} text-amber-900 hover:text-amber-700 disabled:opacity-50 text-sm`}
+                  >
+                    Next Intel →
+                  </button>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
@@ -245,7 +239,7 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
           
           <div className={`${righteous.className} mt-4 flex items-center justify-center gap-2`}>
             <div className="bg-blue-900/10 backdrop-blur-sm rounded-lg px-6 py-3 inline-flex items-center gap-3">
-              <span className="text-blue-900 tracking-wide">SYSTEM ACCESS:</span>
+              <span className="text-blue-900 tracking-wide">ATTEMPTS:</span>
               {[...Array(maxTries)].map((_, i) => (
                 <span 
                   key={i} 
@@ -263,7 +257,7 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
         <div className="max-w-2xl space-y-6">
           <div>
             <div className={`${righteous.className} text-blue-900 text-sm font-bold mb-1 uppercase tracking-wide`}>
-              YOUR INPUT:
+              YOUR AI INSTRUCTIONS:
             </div>
             <div className="bg-white rounded-lg p-4 shadow-lg">
               <textarea
@@ -275,7 +269,7 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center relative">
             <button
               onClick={handleSubmit}
               disabled={isProcessing || !userPrompt.trim() || hasReachedMaxTries}
@@ -301,6 +295,13 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
               )}
             </button>
 
+            {/* Duplicate Warning */}
+            {showDuplicateWarning && (
+              <div className="absolute -top-12 left-0 right-0 bg-yellow-500 text-yellow-900 px-4 py-2 rounded-lg text-sm text-center animate-fade-in">
+                You've already tried this prompt. Update the prompt and try again.
+              </div>
+            )}
+
             <button
               onClick={onComplete}
               className={`${righteous.className} bg-transparent border-2 border-blue-600 hover:bg-blue-50 text-blue-600 px-4 md:px-6 py-3 rounded-lg text-sm md:text-base shadow-lg transition-all hover:scale-105 flex-1 md:flex-none`}
@@ -324,13 +325,10 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
               {result.score < level.minimumScore && (
                 <div className="bg-white/90 rounded-lg p-4">
                   <div className="text-sm space-y-3">
-                    <div>
-                      {result.score < level.minimumScore * 0.6 
-                        ? "SIGNAL DETECTED: Adjust tactical approach for better target match"
-                        : "NEAR MATCH: Fine-tune parameters for mission success"
-                      }
+                    <div className={`${righteous.className} text-blue-900 text-sm font-medium mb-2 tracking-wide flex items-center gap-2`}>
+                      <span>📡 Feedback to Improve Decryption</span>
                     </div>
-                    <div className="text-gray-600 italic">
+                    <div className="text-gray-700">
                       {result.hint}
                     </div>
                     <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
