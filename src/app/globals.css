@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities; 
+@tailwind utilities;
+
+@media (max-width: 768px) {
+  html, body {
+    overflow: hidden;
+    height: 100%;
+  }
+
+  /* Improve mobile readability */
+  .prose {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  /* Add touch-action properties for better swipe handling */
+  .swipeable-container {
+    touch-action: pan-y pinch-zoom;
+  }
+} 

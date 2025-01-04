@@ -7,24 +7,22 @@ module.exports = {
   ],
   theme: {
     extend: {
-      animation: {
-        'glow': 'glow 2s ease-in-out infinite',
-      },
       keyframes: {
-        glow: {
-          '0%, 100%': {
-            boxShadow: '0 0 20px 2px rgba(245, 158, 11, 0.3)',
-            transform: 'scale(1)',
-          },
-          '50%': {
-            boxShadow: '0 0 30px 4px rgba(245, 158, 11, 0.5)',
-            transform: 'scale(1.01)',
-          },
+        'fade-out': {
+          '0%': { opacity: '1' },
+          '75%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        }
       },
+      animation: {
+        'fade-out': 'fade-out 5s ease-out forwards',
+        'fade-in': 'fade-in 0.2s ease-out forwards',
+      }
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
+  plugins: [],
 } 
