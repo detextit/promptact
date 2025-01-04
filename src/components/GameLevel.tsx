@@ -172,14 +172,21 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
           </div>
 
           <div className="space-y-4">
-            <ChatMessage 
-              role="User" 
-              content={level.targetConversation[1].content} 
-            />
-            <ChatMessage 
-              role="AI" 
-              content={level.targetConversation[2].content} 
-            />
+            <div className="bg-amber-900/10 rounded-xl p-4 backdrop-blur-sm">
+              <div className={`${righteous.className} text-amber-900 text-sm font-medium mb-4 tracking-wide flex items-center gap-2`}>
+                <span>🔍 TARGET INTERACTION TO REPLICATE</span>
+              </div>
+              <div className="space-y-4">
+                <ChatMessage 
+                  role="User" 
+                  content={level.targetConversation[1].content} 
+                />
+                <ChatMessage 
+                  role="AI" 
+                  content={level.targetConversation[2].content} 
+                />
+              </div>
+            </div>
           </div>
 
           {/* Intel section with navigation */}
@@ -272,7 +279,7 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
           <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center relative">
             <button
               onClick={handleSubmit}
-              disabled={isProcessing || !userPrompt.trim() || hasReachedMaxTries}
+              disabled={isProcessing || !userPrompt.trim() || hasReachedMaxTries || result?.passed}
               className={`${righteous.className} relative bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 md:px-8 py-3 rounded-lg text-sm md:text-base shadow-lg transition-all ${
                 !isProcessing && !hasReachedMaxTries && userPrompt.trim() 
                   ? 'hover:scale-105 border-2 border-white/80' 
@@ -304,9 +311,22 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
 
             <button
               onClick={onComplete}
-              className={`${righteous.className} bg-transparent border-2 border-blue-600 hover:bg-blue-50 text-blue-600 px-4 md:px-6 py-3 rounded-lg text-sm md:text-base shadow-lg transition-all hover:scale-105 flex-1 md:flex-none`}
+              disabled={isProcessing}
+              className={`${righteous.className} ${
+                hasReachedMaxTries || result?.passed
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50'
+              } px-4 md:px-6 py-3 rounded-lg text-sm md:text-base shadow-lg transition-all hover:scale-105 flex-1 md:flex-none disabled:opacity-50 disabled:hover:bg-transparent`}
             >
-              {hasReachedMaxTries ? 'NEXT MISSION ▶︎' : 'SKIP MISSION ▶︎▶︎'}
+              {hasReachedMaxTries || result?.passed ? (
+                <span className="flex items-center justify-center gap-2">
+                  NEXT MISSION ▶︎
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  SKIP MISSION ▶︎▶︎
+                </span>
+              )}
             </button>
           </div>
 
@@ -341,15 +361,20 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
                 </div>
               )}
 
-              <div className="space-y-4">
-                <ChatMessage 
-                  role="User" 
-                  content={level.targetConversation[1].content} 
-                />
-                <ChatMessage 
-                  role="Your AI" 
-                  content={result.response} 
-                />
+              <div className="bg-blue-900/10 rounded-xl p-4 backdrop-blur-sm">
+                <div className={`${righteous.className} text-blue-900 text-sm font-medium mb-4 tracking-wide flex items-center gap-2`}>
+                  <span>🔄 YOUR AI INTERACTION RESULT</span>
+                </div>
+                <div className="space-y-4">
+                  <ChatMessage 
+                    role="User" 
+                    content={level.targetConversation[1].content} 
+                  />
+                  <ChatMessage 
+                    role="Your AI" 
+                    content={result.response} 
+                  />
+                </div>
               </div>
 
               {result.passed && (
