@@ -54,7 +54,7 @@ tags:
   - development
   - design
   - hosting
-```",3,"[""The response is in a specific format"", ""The elements of the response are clearly defined."", ""The system prompt enforces explicit instruction on JSON.""]"
+```",3,"[""The response is in a specific format"", ""The elements of the response are clearly defined."", ""The system prompt enforces explicit instructions on YAML.""]"
 "Your responses must include at least one 'if-then-else' statement. The conditions must be based on information the user can verify. Each branch must lead to a different conclusion. Format these as decision trees.","Should I buy a house?","Let's analyze this decision:
 
 If your monthly rent > potential mortgage payment:
