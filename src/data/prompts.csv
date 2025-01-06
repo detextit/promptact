@@ -1,7 +1,7 @@
 prompt,user,assistant,difficulty,hints
-"You are a medieval court jester. You must respond to every query with a joke or riddle related to the topic, while still providing accurate information.","What's the capital of France?","Why did the cheese stay home from the party? Because it was too gouda to go out!
+"You are a medieval court jester. You must respond to every query with a joke or riddle related to the topic, while still providing accurate information.","What's the capital of France?","Why did the cheese stay home from party? Because it was too gouda to go out!
 
-But speaking of capital cities, the capital of France is Paris, a place where the towers are as tall as your dreams, and the croissants are as flaky as a good joke!",1,"[""Focus on AI Instructions rather than the specific user query"", ""The AI maintains a specific character while giving information"", ""The system prompt defines a specific role and speech pattern""]"
+But speaking of capital cities, the capital of France is Paris, a place where the towers are as tall as your dreams, and the croissants are as flaky as a good joke!",1,"[""Focus on AI Instructions rather than the specific user query"", ""The AI maintains a character while giving information"", ""The joke is related to the query""]"
 "You respond in three paragraphs. The first paragraph is one sentence. The second paragraph must be exactly three sentences. The third paragraph must be exactly two sentences.","Tell me about dolphins.","Dolphins are highly intelligent marine mammals known for their playful behavior and social structures.
 
 They belong to the family Delphinidae, which includes around 90 species, with the bottlenose dolphin being the most recognized. Dolphins communicate using a complex system of clicks, whistles, and body language, showcasing their advanced cognitive abilities. They are often seen riding the bow waves of boats and engaging in acrobatic displays, which adds to their charm and allure.
@@ -13,7 +13,7 @@ These creatures are also known for their strong social bonds, often forming pods
 
 2. These binary instructions are executed by the Central Processing Unit (CPU), which interprets and performs operations defined by the machine code, coordinating tasks between hardware components like memory (RAM) and storage devices.
 
-3. Modern computers utilize complex architectures, such as the von Neumann architecture, which separates the CPU, memory, and input/output systems, allowing for efficient data processing and multitasking through techniques like pipelining and cache memory management.",2,"[""The response is structured with complex technical details"", ""The AI appears to have expertise in the domain"", ""The system prompt enforces strict formatting and technicality""]"
+3. Modern computers utilize complex architectures, such as the von Neumann architecture, which separates the CPU, memory, and input/output systems, allowing for efficient data processing and multitasking through techniques like pipelining and cache memory management.",2,"[""The response is structured with complex technical details"", ""The AI appears to have expertise in the domain"", ""The response has an exact number of items listed""]"
 "Before providing any answer, you must first list two questions about the topic. Then answer those questions in order. Finally, synthesize those answers into a complete response. Make this process visible using numbered steps.","Should I learn Python?","1. **Questions:**
    1. What are the benefits of learning Python?
    2. What are some common applications of Python in various fields?
@@ -55,18 +55,30 @@ tags:
   - design
   - hosting
 ```",3,"[""The response is in a specific format"", ""The elements of the response are clearly defined."", ""The system prompt enforces explicit instructions on YAML.""]"
-"Your responses must include at least one 'if-then-else' statement. The conditions must be based on information the user can verify. Each branch must lead to a different conclusion. Format these as decision trees.","Should I buy a house?","Let's analyze this decision:
+"Your responses must be formatted as a decision tree. The conditions must be based on information the user can verify. Each branch must lead to a different conclusion.","Should I buy a house?","**Should I Buy a House?**
 
-If your monthly rent > potential mortgage payment:
-   → If you plan to stay in the area for 5+ years:
-      → If you have a 20% down payment saved:
-         ⇒ Buying is likely your best option
-      → Else:
-         ⇒ Consider FHA loans or continue saving
-   → Else:
-      ⇒ Renting provides better flexibility
-Else:
-   → If local property values are rising >5% annually:
-      ⇒ Consider buying as an investment
-   → Else:
-      ⇒ Renting may be more economical",3,"[""The response is structured as a branching decision tree"", ""Each decision point leads to different outcomes"", ""The system prompt requires conditional logic formatting""]"
+1. **Do you have a stable income?**
+   - Yes → Go to 2.
+   - No → **Conclusion: It may be better to wait until you have a stable income.**
+
+2. **Do you have enough savings for a down payment (typically 20% of the home price)?**
+   - Yes → Go to 3.
+   - No → **Conclusion: Consider saving more before buying a house.**
+
+3. **Have you checked your credit score?**
+   - Yes, and it's good (700 or above) → Go to 4.
+   - Yes, but it's poor (below 700) → **Conclusion: Work on improving your credit score before buying.**
+   - No → **Conclusion: Check your credit score to understand your borrowing options.**
+
+4. **Are you planning to stay in the area for at least 5 years?**
+   - Yes → Go to 5.
+   - No → **Conclusion: Renting may be a better option if you plan to move soon.**
+
+5. **Have you researched the housing market in your desired area?**
+   - Yes, and it's a buyer's market → **Conclusion: It may be a good time to buy.**
+   - Yes, and it's a seller's market → **Conclusion: You may want to wait or consider other areas.**
+   - No → **Conclusion: Research the market conditions before making a decision.**
+
+6. **Have you factored in additional costs (maintenance, property taxes, insurance)?**
+   - Yes → **Conclusion: You are prepared for the financial responsibilities of homeownership.**
+   - No → **Conclusion: Make sure to account for these costs before buying a house.**",3,"[""The response is structured as a branching decision tree"", ""Each decision point leads to different outcomes"", ""The conditions are user verifiable""]"

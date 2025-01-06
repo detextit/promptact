@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Level } from '@/types';
 import ReactMarkdown from 'react-markdown';
+import remarkBreaks from "remark-breaks";
 import { Righteous } from 'next/font/google';
 import { useSwipeable } from 'react-swipeable';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import type { Components } from 'react-markdown';
 const righteous = Righteous({ weight: '400', subsets: ['latin'] });
 
 interface GameLevelProps {
@@ -10,6 +14,17 @@ interface GameLevelProps {
   onComplete: () => void;
   maxTries?: number;
 }
+
+// Create a constant for the markdown components configuration
+const markdownComponents: Components = {
+  p: ({children}) => <p className="mb-4">{children}</p>,
+  ul: ({children}) => <ul className="list-disc pl-4 mb-4 space-y-2">{children}</ul>,
+  ol: ({children}) => <ol className="list-decimal pl-4 mb-4 space-y-2">{children}</ol>,
+  li: ({children}) => <li className="ml-2">{children}</li>,
+  h1: ({children}) => <h1 className="text-xl font-bold mb-4">{children}</h1>,
+  h2: ({children}) => <h2 className="text-lg font-bold mb-3">{children}</h2>,
+  h3: ({children}) => <h3 className="text-md font-bold mb-2">{children}</h3>
+};
 
 export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevelProps) {
   const [userPrompt, setUserPrompt] = useState('');
@@ -108,8 +123,14 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
           </div>
         )}
       </div>
-      <div className="text-gray-800 prose prose-sm max-h-[30vh] overflow-y-auto">
-        <ReactMarkdown>{content}</ReactMarkdown>
+      <div className="markdown text-gray-800 prose prose-sm max-h-[30vh] overflow-y-auto">
+        <ReactMarkdown 
+          remarkPlugins={[remarkBreaks, remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+          components={markdownComponents}
+        >
+          {content}
+        </ReactMarkdown>
       </div>
     </div>
   );
@@ -202,7 +223,13 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
               }`}>
                 <div className="text-gray-600 prose prose-sm">
                   {(result?.score && result.score >= level.minimumScore) || hasReachedMaxTries ? (
-                    <ReactMarkdown>{level.targetConversation[0].content}</ReactMarkdown>
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkBreaks, remarkGfm]}
+                      rehypePlugins={[rehypeRaw]}
+                      components={markdownComponents}
+                    >
+                      {level.targetConversation[0].content}
+                    </ReactMarkdown>
                   ) : (
                     <div className={`${righteous.className} text-amber-800 text-center py-2`}>
                       🔒 ACHIEVE {(level.minimumScore * 100).toFixed(0)}% MATCH TO DECRYPT SYSTEM PROMPT 🔒
@@ -241,7 +268,13 @@ export default function GameLevel({ level, onComplete, maxTries = 3 }: GameLevel
                     </span>
                   )}
                 </div>
-                <ReactMarkdown>{level.hint[currentHintIndex]}</ReactMarkdown>
+                <ReactMarkdown 
+                  remarkPlugins={[remarkBreaks, remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={markdownComponents}
+                >
+                  {level.hint[currentHintIndex]}
+                </ReactMarkdown>
                 {level.hint.length > 1 && (
                   <div className="mt-4 flex justify-between items-center">
                     <button

@@ -80,6 +80,8 @@ export async function POST(request: Request) {
     // Test the user's prompt with the conversation
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
+      temperature: 0.0,
+      max_tokens: 512,
       messages: [
         { role: 'system', content: userPrompt },
         { role: 'user', content: userMessage.content }
